@@ -114,7 +114,7 @@ public class TestController {
 		model.addAttribute("pay_total", request.getParameter("PCD_PAY_TOTAL")); // 결제요청금액
 		model.addAttribute("pay_taxtotal", request.getParameter("PCD_PAY_TAXTOTAL")); // 부가세(복합과세 적용 시)
 		model.addAttribute("pay_istax", request.getParameter("PCD_PAY_ISTAX")); // 과세 여부 (과세:Y 비과세:N)
-		model.addAttribute("pay_date", request.getParameter("PCD_PAY_TIME").substring(0, 8)); // 결제완료 일자
+		model.addAttribute("pay_date", request.getParameter("PCD_PAY_TIME")==null ? "" : request.getParameter("PCD_PAY_TIME").substring(0,8)); // 결제완료 일자
 		model.addAttribute("pay_bankacctype", request.getParameter("PCD_PAY_BANKACCTYPE")); // 고객 구분 (법인 | 개인 or 개인사업자)
 
 		model.addAttribute("pay_bank", request.getParameter("PCD_PAY_BANK")); // 은행코드
