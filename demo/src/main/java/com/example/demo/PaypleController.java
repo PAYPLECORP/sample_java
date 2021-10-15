@@ -24,13 +24,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class TestController {
+public class PaypleController {
 
 	/*
-	 * order.jsp
+	 * order.jsp : 주문 페이지
 	 */
 	@RequestMapping(value = "/order")
-	public String test(Model model) {
+	public String order(Model model) {
 		model.addAttribute("payer_no", "1234"); // 파트너 회원 고유번호
 		model.addAttribute("payer_name", "홍길동"); // 결제자 이름
 		model.addAttribute("payer_hp", "01012345678"); // 결제자 휴대전화번호
@@ -283,6 +283,21 @@ public class TestController {
 		return jsonObject;
 
 	}
+	
+	
+	/*
+	 * payCertSend : 결제요청 재컨펌 (CERT)
+	 */
+	@ResponseBody
+	@PostMapping(value = "/payCertSend")
+	public JSONObject payCertSend(HttpServletRequest request) {
+
+		JSONObject jsonObject = new JSONObject();
+
+		return jsonObject;
+
+	}
+	
 
 	/* Payple API - Routing */
 

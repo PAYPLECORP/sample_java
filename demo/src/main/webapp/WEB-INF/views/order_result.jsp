@@ -11,6 +11,60 @@
     
     <script>
     $(document).ready(function () {
+    	
+    	// 결제요청 재컨펌(CERT)
+        $('#payConfirmAct').on('click', function(e) {
+
+            e.preventDefault();
+
+            $('#payConfirmResult').text('');
+
+            var con = "결제를 승인(CERT)하시겠습니까?";
+
+            if (confirm(con) == true) {
+
+                var formData = new FormData($('#payConfirmForm')[0]);
+
+                $.ajax({
+                    type: 'POST',
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    async: false,
+                    url: '/payCertSend',
+                    dataType: 'json',
+                    data: formData,
+                    success: function(data) {
+                        console.log(data);
+
+                        alert(data.PCD_PAY_MSG);
+
+                        var $_table = $("<table></table>");
+                        var table_data = "";
+
+                        $.each(data, function(key, value) {
+                            table_data += '<tr><td>' + key + '</td><td>: ' + value + '</td><tr>';
+                        });
+
+                        $_table.append(table_data);
+
+                        $_table.appendTo('#payConfirmResult');
+
+                        $('#payConfirmResult').css('display', '');
+
+                    },
+                    error: function(jqxhr, status, error) {
+                        console.log(jqxhr);
+
+                        alert(jqxhr.statusText + ",  " + status + ",   " + error);
+                        alert(jqxhr.status);
+                        alert(jqxhr.responseText);
+                    }
+                });
+
+            }
+
+        });
         
     	 // 결제 취소 요청
         $('#payRefundAct').on('click', function() {
