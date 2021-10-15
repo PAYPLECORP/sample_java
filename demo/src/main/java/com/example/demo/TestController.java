@@ -76,7 +76,7 @@ public class TestController {
 
 		return "order_confirm";
 	}
-	
+
 	/**
 	 * 파트너 인증 메소드
 	 * 
@@ -100,11 +100,16 @@ public class TestController {
 			obj.put("custKey", cust_key);
 
 			// 상황별 파트너 인증 요청 파라미터
-			if (params != null) {
-				for (Map.Entry<String, String> elem : params.entrySet()) {
-					obj.put(elem.getKey(), elem.getValue());
-				}
+			
+			 if (params != null) { 
+				 for (Map.Entry<String, String> elem : params.entrySet()) { 
+					 obj.put(elem.getKey(), elem.getValue()); 
+				 } 
 			}
+			 
+
+			System.out.println("파트너 인증 Request: " + obj.toString());
+
 			URL url = new URL(pURL);
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
@@ -115,11 +120,13 @@ public class TestController {
 			 */
 			con.setRequestMethod("POST");
 			con.setRequestProperty("content-type", "application/json");
+			con.setRequestProperty("charset", "UTF-8");
 			con.setRequestProperty("referer", "http://localhost:8080");
 			con.setDoOutput(true);
 
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(obj.toString());
+			//wr.writeBytes(obj.toString());
+			wr.write(obj.toString().getBytes());
 			wr.flush();
 			wr.close();
 
@@ -197,7 +204,6 @@ public class TestController {
 
 		return "order_result";
 	}
-
 
 	/*
 	 * payRefund : 결제취소
@@ -277,26 +283,55 @@ public class TestController {
 		return jsonObject;
 
 	}
-	
-	
-	/* Payple API - Routing */ 
-	
+
+	/* Payple API - Routing */
+
 	// URL링크결제 생성 (linkReg.jsp)
 	@RequestMapping(value = "/linkReg")
-	public String linkRegRoute(Model model) {
+	public String linkRegRoute() {
 		return "linkReg";
 	}
-	
+
 	// 결제결과 조회 (payInfo.jsp)
 	@RequestMapping(value = "/payInfo")
-	public String payInfoRoute(Model model) {
+	public String payInfoRoute() {
 		return "payInfo";
 	}
-	
-	
-	
+
+	// 카드 정기결제 재결제 (paySimpleCardSend.jsp)
+	@RequestMapping(value = "/paySimpleCardSend")
+	public String paySimpleCardSendRoute(Model model) {
+
+		model.addAttribute("payer_id", ""); // 결제자 고유 ID (빌링키)
+		model.addAttribute("pay_goods", "휴대폰"); // 상품명
+		model.addAttribute("pay_total", "1000"); // 결제요청금액
+		model.addAttribute("payer_no", "1234"); // 결제자 고유번호 (파트너사 회원 회원번호)
+		model.addAttribute("payer_email", "test@payple.kr"); // 결제자 이메일
+
+		return "paySimpleCardSend";
+	}
+
+	// 계좌 정기결제 재결제 (paySimpleSend.jsp)
+	@RequestMapping(value = "/paySimpleSend")
+	public String paySimpleSendRoute(Model model) {
+
+		model.addAttribute("payer_id", ""); // 결제자 고유 ID (빌링키)
+		model.addAttribute("pay_goods", "휴대폰"); // 상품명
+		model.addAttribute("pay_total", "1000"); // 결제요청금액
+		model.addAttribute("payer_no", "1234"); // 결제자 고유번호 (파트너사 회원 회원번호)
+		model.addAttribute("payer_email", "test@payple.kr"); // 결제자 이메일
+
+		return "paySimpleSend";
+	}
+
+	// 현금영수증 발행 (taxSaveReq.jsp)
+	@RequestMapping(value = "/taxSaveReq")
+	public String taxSaveReqRoute(Model model) {
+		return "taxSaveReq";
+	}
+
 	/* Payple API - Request(POST) */
-	
+
 	/*
 	 * linkReg : URL링크결제 생성
 	 */
@@ -322,7 +357,7 @@ public class TestController {
 		// 링크URL 생성 요청 파라미터
 		String pay_work = "LINKREG";// (필수) 요청 작업 구분 (URL링크결제 : LINKREG)
 		String pay_type = request.getParameter("PCD_PAY_TYPE"); // (필수) 결제수단 (transfer|card)
-		String pay_goods = request.getParameter("PCD_PAY_GOODS"); // (필수) 상품명	
+		String pay_goods = request.getParameter("PCD_PAY_GOODS"); // (필수) 상품명
 		String pay_total = request.getParameter("PCD_PAY_TOTAL"); // (필수) 결제요청금액
 		String pay_istax = request.getParameter("PCD_PAY_ISTAX"); // 과세여부
 		String pay_taxtotal = request.getParameter("PCD_PAY_TAXTOTAL"); // 부가세(복합과세 적용 시)
@@ -332,7 +367,7 @@ public class TestController {
 		try {
 			// 링크URL 생성 요청 전송
 			JSONObject linkRegObj = new JSONObject();
-			
+
 			linkRegObj.put("PCD_CST_ID", cstId);
 			linkRegObj.put("PCD_CUST_KEY", custKey);
 			linkRegObj.put("PCD_AUTH_KEY", authKey);
@@ -401,22 +436,20 @@ public class TestController {
 
 		// 결제결과 조회 요청 파라미터
 		String pay_type = request.getParameter("PCD_PAY_TYPE"); // (필수) 결제수단 (transfer|card)
-		String pay_oid = request.getParameter("PCD_PAY_OID"); // (필수) 주문번호	
+		String pay_oid = request.getParameter("PCD_PAY_OID"); // (필수) 주문번호
 		String pay_date = request.getParameter("PCD_PAY_DATE"); // (필수) 원거래 결제일자
-		
 
 		try {
 			// 결제결과 조회 요청 전송
-			JSONObject linkRegObj = new JSONObject();
-			
-			linkRegObj.put("PCD_CST_ID", cstId);
-			linkRegObj.put("PCD_CUST_KEY", custKey);
-			linkRegObj.put("PCD_AUTH_KEY", authKey);
-			linkRegObj.put("PCD_PAYCHK_FLAG", "Y");
-			linkRegObj.put("PCD_PAY_TYPE", pay_type);
-			linkRegObj.put("PCD_PAY_OID", pay_oid);
-			linkRegObj.put("PCD_PAY_DATE", pay_date);
-			
+			JSONObject payInfoObj = new JSONObject();
+
+			payInfoObj.put("PCD_CST_ID", cstId);
+			payInfoObj.put("PCD_CUST_KEY", custKey);
+			payInfoObj.put("PCD_AUTH_KEY", authKey);
+			payInfoObj.put("PCD_PAYCHK_FLAG", "Y");
+			payInfoObj.put("PCD_PAY_TYPE", pay_type);
+			payInfoObj.put("PCD_PAY_OID", pay_oid);
+			payInfoObj.put("PCD_PAY_DATE", pay_date);
 
 			URL url = new URL(payInfoURL);
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -427,7 +460,7 @@ public class TestController {
 			con.setDoOutput(true);
 
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(linkRegObj.toString());
+			wr.writeBytes(payInfoObj.toString());
 			wr.flush();
 			wr.close();
 
@@ -449,5 +482,191 @@ public class TestController {
 		}
 		return jsonObject;
 	}
-	
+
+	/*
+	 * taxSaveReq : 현금영수증 발행 및 취소
+	 */
+	@ResponseBody
+	@PostMapping(value = "/taxSaveReq")
+	public JSONObject taxSaveReq(HttpServletRequest request) {
+		JSONObject jsonObject = new JSONObject();
+		JSONParser jsonParser = new JSONParser();
+		// 파트너 인증
+		Map<String, String> taxSaveParams = new HashMap<>();
+
+		// (필수) 요청 작업 구분 (현금영수증발행 : TSREG, 현금영수증발행취소 : TSCANCEL)
+		String pay_work = request.getParameter("PCD_TAXSAVE_REQUEST").equals("regist") ? "TSREG" : "TSCANCEL";
+		taxSaveParams.put("PCD_PAY_WORK", pay_work);
+		JSONObject authObj = new JSONObject();
+		authObj = payAuth(taxSaveParams);
+		// System.out.println(taxSaveParams);
+
+		/*
+		 * // 결제취소 전 파트너 인증 Map<String, String> refundParams = new HashMap<>();
+		 * refundParams.put("PCD_PAYCANCEL_FLAG", "Y"); JSONObject authObj = new
+		 * JSONObject(); authObj = payAuth(refundParams);
+		 */
+		// 파트너 인증 응답 값
+		String cstId = (String) authObj.get("cst_id"); // 파트너사 ID
+		String custKey = (String) authObj.get("custKey"); // 파트너사 키
+		String authKey = (String) authObj.get("AuthKey"); // 인증 키
+		String taxSaveRegURL = (String) authObj.get("return_url"); // 현금영수 발행/취소 요청 URL
+		System.out.println(taxSaveRegURL);
+		
+		/*
+		 * System.out.println(cstId); System.out.println(custKey);
+		 * System.out.println(authKey); System.out.println(taxSaveRegURL);
+		 */
+		// 요청 파라미터
+		String payer_id = request.getParameter("PCD_PAYER_ID"); // (필수) 결제자 고유 ID (빌링키)
+		String pay_oid = request.getParameter("PCD_PAY_OID"); // (필수) 주문번호
+		String taxsave_amount = request.getParameter("PCD_PAY_TOTAL"); // (필수) 현금영수증 발행금액
+		String taxsave_tradeuse = request.getParameter("PCD_PAY_ISTAX"); // 현금영수증 발행 타입 (personal:소득공제용 | company:지출증빙)
+		String taxsave_identinum = request.getParameter("PCD_PAY_TAXTOTAL"); // 현금영수증 발행대상 번호
+		try {
+			// 링크URL 생성 요청 전송
+			JSONObject taxsaveReqObj = new JSONObject();
+			/*
+			taxsaveReqObj.put("PCD_CST_ID", cstId);
+			taxsaveReqObj.put("PCD_CUST_KEY", custKey);
+			taxsaveReqObj.put("PCD_AUTH_KEY", authKey);
+			taxsaveReqObj.put("PCD_PAYER_ID", payer_id);
+			taxsaveReqObj.put("PCD_PAY_OID", pay_oid);
+			taxsaveReqObj.put("PCD_TAXSAVE_AMOUNT", taxsave_amount);
+			taxsaveReqObj.put("PCD_TAXSAVE_TRADEUSE", taxsave_tradeuse);
+			taxsaveReqObj.put("PCD_TAXSAVE_IDENTINUM", taxsave_identinum);
+			*/
+			taxsaveReqObj.put("PCD_CST_ID", cstId);
+			taxsaveReqObj.put("PCD_CUST_KEY", custKey);
+			taxsaveReqObj.put("PCD_AUTH_KEY", authKey);
+			taxsaveReqObj.put("PCD_PAYER_ID", "1");
+			taxsaveReqObj.put("PCD_PAY_OID", "1");
+			taxsaveReqObj.put("PCD_TAXSAVE_AMOUNT", "1");
+			taxsaveReqObj.put("PCD_TAXSAVE_TRADEUSE", "1");
+			taxsaveReqObj.put("PCD_TAXSAVE_IDENTINUM", "1");			
+			
+			URL url = new URL(taxSaveRegURL);
+			
+			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			
+			con.setRequestMethod("POST");
+			con.setRequestProperty("content-type", "application/json");
+			con.setRequestProperty("referer", "http://localhost:8080");
+			con.setDoOutput(true);
+			
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			//wr.writeBytes(taxsaveReqObj.toString());
+			wr.write(taxsaveReqObj.toString().getBytes());
+			wr.flush();
+			wr.close();
+			
+			int responseCode = con.getResponseCode();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			jsonObject = (JSONObject) jsonParser.parse(response.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return jsonObject;
+	}
+
+	/*
+	 * paySimpleCardSend : 카드 정기결제 재결제
+	 */
+	@ResponseBody
+	@PostMapping(value = "/paySimpleCardSend")
+	public JSONObject paySimpleCardSend(HttpServletRequest request) {
+		JSONObject jsonObject = new JSONObject();
+		JSONParser jsonParser = new JSONParser();
+
+		// 카드 정기결제 재결제 전 파트너 인증
+		Map<String, String> bilingParams = new HashMap<>();
+		bilingParams.put("PCD_PAY_TYPE", "card");
+		bilingParams.put("PCD_SIMPLE_FLAG", "Y");
+
+		JSONObject authObj = new JSONObject();
+		authObj = payAuth(bilingParams);
+
+		System.out.println(authObj.toString());
+
+		// 파트너 인증 응답값
+		String cstId = (String) authObj.get("cst_id"); // 파트너사 ID
+		String custKey = (String) authObj.get("custKey"); // 파트너사 키
+		String authKey = (String) authObj.get("AuthKey"); // 인증 키
+		String bilingURL = (String) authObj.get("return_url"); // 카드 정기결제 재결제 요청 URL
+
+		// 카드 정기결제 재결제 요청 파라미터
+		String pay_type = "card"; // (필수) 결제수단 (card)
+		String payer_id = request.getParameter("PCD_PAYER_ID"); // (필수) 결제자 고유 ID (빌링키)
+		String pay_goods = request.getParameter("PCD_PAY_GOODS"); // (필수) 상품명
+		String pay_total = request.getParameter("PCD_PAY_TOTAL"); // (필수) 결제요청금액
+		String pay_oid = request.getParameter("PCD_PAY_OID"); // 주문번호
+		String payer_no = request.getParameter("PCD_PAYER_NO"); // 결제자 고유번호 (파트너사 회원 회원번호)
+		String payer_name = request.getParameter("PCD_PAYER_NAME"); // 결제자 이름
+		String payer_hp = request.getParameter("PCD_PAYER_HP"); // 결제자 휴대전화번호
+		String payer_email = request.getParameter("PCD_PAYER_EMAIL"); // 결제자 이메일
+		String pay_istax = request.getParameter("PCD_PAY_ISTAX"); // 과세여부
+		String pay_taxtotal = request.getParameter("PCD_PAY_TAXTOTAL"); // 부가세(복합과세 적용 시)
+
+		try {
+			// 카드 정기결제 재결제 요청 전송
+			JSONObject bilingObj = new JSONObject();
+
+			bilingObj.put("PCD_CST_ID", cstId);
+			bilingObj.put("PCD_CUST_KEY", custKey);
+			bilingObj.put("PCD_AUTH_KEY", authKey);
+			bilingObj.put("PCD_PAY_TYPE", pay_type);
+			bilingObj.put("PCD_PAYER_ID", payer_id);
+			bilingObj.put("PCD_PAY_GOODS", pay_goods);
+			bilingObj.put("PCD_SIMPLE_FLAG", "Y");
+			bilingObj.put("PCD_PAY_TOTAL", pay_total);
+			bilingObj.put("PCD_PAY_OID", pay_oid);
+			bilingObj.put("PCD_PAYER_NO", payer_no);
+			bilingObj.put("PCD_PAYER_NAME", payer_name);
+			bilingObj.put("PCD_PAYER_HP", payer_hp);
+			bilingObj.put("PCD_PAYER_EMAIL", payer_email);
+			bilingObj.put("PCD_PAY_ISTAX", pay_istax);
+			bilingObj.put("PCD_PAY_TAXTOTAL", pay_taxtotal);
+
+			System.out.println(bilingObj.toString());
+
+			URL url = new URL(bilingURL);
+			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+			con.setRequestMethod("POST");
+			con.setRequestProperty("content-type", "application/json");
+			con.setRequestProperty("charset", "UTF-8");
+			con.setRequestProperty("referer", "http://localhost:8080");
+			con.setDoOutput(true);
+
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.write(bilingObj.toString().getBytes());
+			// wr.writeBytes(bilingObj.toString());
+			wr.flush();
+			wr.close();
+
+			int responseCode = con.getResponseCode();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+
+			in.close();
+
+			jsonObject = (JSONObject) jsonParser.parse(response.toString());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return jsonObject;
+	}
+
 }
