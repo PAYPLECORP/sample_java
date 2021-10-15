@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.payple;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class PaypleController {
 
 	/*
-	 * order.jsp : 주문 페이지
+	 * order.jsp : 주문 페이지  
 	 */
 	@RequestMapping(value = "/order")
 	public String order(Model model) {
@@ -379,6 +379,12 @@ public class PaypleController {
 	@RequestMapping(value = "/taxSaveReq")
 	public String taxSaveReqRoute(Model model) {
 		return "taxSaveReq";
+	}
+	
+	// 등록 조회 및 해지(카드/계좌) (payUser.jsp)
+	@RequestMapping(value = "/payUser")
+	public String payUserRoute(Model model) {
+		return "payUser";
 	}
 
 	/* Payple API - Request(POST) */
