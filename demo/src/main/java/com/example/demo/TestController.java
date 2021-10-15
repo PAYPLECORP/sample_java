@@ -298,20 +298,7 @@ public class TestController {
 		return "payInfo";
 	}
 
-	// 카드 정기결제 재결제 (paySimpleCardSend.jsp)
-	@RequestMapping(value = "/paySimpleCardSend")
-	public String paySimpleCardSendRoute(Model model) {
-
-		model.addAttribute("payer_id", ""); // 결제자 고유 ID (빌링키)
-		model.addAttribute("pay_goods", "휴대폰"); // 상품명
-		model.addAttribute("pay_total", "1000"); // 결제요청금액
-		model.addAttribute("payer_no", "1234"); // 결제자 고유번호 (파트너사 회원 회원번호)
-		model.addAttribute("payer_email", "test@payple.kr"); // 결제자 이메일
-
-		return "paySimpleCardSend";
-	}
-
-	// 계좌 정기결제 재결제 (paySimpleSend.jsp)
+	// 정기결제 재결제(빌링키결제) (paySimpleSend.jsp)
 	@RequestMapping(value = "/paySimpleSend")
 	public String paySimpleSendRoute(Model model) {
 
@@ -499,7 +486,6 @@ public class TestController {
 		taxSaveParams.put("PCD_PAY_WORK", pay_work);
 		JSONObject authObj = new JSONObject();
 		authObj = payAuth(taxSaveParams);
-		// System.out.println(taxSaveParams);
 
 		/*
 		 * // 결제취소 전 파트너 인증 Map<String, String> refundParams = new HashMap<>();
@@ -523,10 +509,12 @@ public class TestController {
 		String taxsave_amount = request.getParameter("PCD_PAY_TOTAL"); // (필수) 현금영수증 발행금액
 		String taxsave_tradeuse = request.getParameter("PCD_PAY_ISTAX"); // 현금영수증 발행 타입 (personal:소득공제용 | company:지출증빙)
 		String taxsave_identinum = request.getParameter("PCD_PAY_TAXTOTAL"); // 현금영수증 발행대상 번호
+		
+		
 		try {
 			// 링크URL 생성 요청 전송
 			JSONObject taxsaveReqObj = new JSONObject();
-			/*
+			
 			taxsaveReqObj.put("PCD_CST_ID", cstId);
 			taxsaveReqObj.put("PCD_CUST_KEY", custKey);
 			taxsaveReqObj.put("PCD_AUTH_KEY", authKey);
@@ -535,15 +523,6 @@ public class TestController {
 			taxsaveReqObj.put("PCD_TAXSAVE_AMOUNT", taxsave_amount);
 			taxsaveReqObj.put("PCD_TAXSAVE_TRADEUSE", taxsave_tradeuse);
 			taxsaveReqObj.put("PCD_TAXSAVE_IDENTINUM", taxsave_identinum);
-			*/
-			taxsaveReqObj.put("PCD_CST_ID", cstId);
-			taxsaveReqObj.put("PCD_CUST_KEY", custKey);
-			taxsaveReqObj.put("PCD_AUTH_KEY", authKey);
-			taxsaveReqObj.put("PCD_PAYER_ID", "1");
-			taxsaveReqObj.put("PCD_PAY_OID", "1");
-			taxsaveReqObj.put("PCD_TAXSAVE_AMOUNT", "1");
-			taxsaveReqObj.put("PCD_TAXSAVE_TRADEUSE", "1");
-			taxsaveReqObj.put("PCD_TAXSAVE_IDENTINUM", "1");			
 			
 			URL url = new URL(taxSaveRegURL);
 			
@@ -555,8 +534,7 @@ public class TestController {
 			con.setDoOutput(true);
 			
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			//wr.writeBytes(taxsaveReqObj.toString());
-			wr.write(taxsaveReqObj.toString().getBytes());
+			wr.write(taxsaveReqObj.toString().getBytes());			
 			wr.flush();
 			wr.close();
 			
@@ -575,18 +553,19 @@ public class TestController {
 		return jsonObject;
 	}
 
+
 	/*
-	 * paySimpleCardSend : 카드 정기결제 재결제
+	 * paySimpleSend : 정기결제 재결제(빌링키 결제)
 	 */
 	@ResponseBody
-	@PostMapping(value = "/paySimpleCardSend")
-	public JSONObject paySimpleCardSend(HttpServletRequest request) {
+	@PostMapping(value = "/paySimpleSend")
+	public JSONObject paySimpleSend(HttpServletRequest request) {
 		JSONObject jsonObject = new JSONObject();
 		JSONParser jsonParser = new JSONParser();
 
-		// 카드 정기결제 재결제 전 파트너 인증
+		// 정기결제 재결제 전 파트너 인증
 		Map<String, String> bilingParams = new HashMap<>();
-		bilingParams.put("PCD_PAY_TYPE", "card");
+		bilingParams.put("PCD_PAY_TYPE", request.getParameter("PCD_PAY_TYPE"));
 		bilingParams.put("PCD_SIMPLE_FLAG", "Y");
 
 		JSONObject authObj = new JSONObject();
@@ -600,8 +579,8 @@ public class TestController {
 		String authKey = (String) authObj.get("AuthKey"); // 인증 키
 		String bilingURL = (String) authObj.get("return_url"); // 카드 정기결제 재결제 요청 URL
 
-		// 카드 정기결제 재결제 요청 파라미터
-		String pay_type = "card"; // (필수) 결제수단 (card)
+		// 정기결제 재결제 요청 파라미터
+		String pay_type = request.getParameter("PCD_PAY_TYPE"); // (필수) 결제수단 (card | transfer)
 		String payer_id = request.getParameter("PCD_PAYER_ID"); // (필수) 결제자 고유 ID (빌링키)
 		String pay_goods = request.getParameter("PCD_PAY_GOODS"); // (필수) 상품명
 		String pay_total = request.getParameter("PCD_PAY_TOTAL"); // (필수) 결제요청금액
@@ -614,7 +593,7 @@ public class TestController {
 		String pay_taxtotal = request.getParameter("PCD_PAY_TAXTOTAL"); // 부가세(복합과세 적용 시)
 
 		try {
-			// 카드 정기결제 재결제 요청 전송
+			// 정기결제 재결제 요청 전송
 			JSONObject bilingObj = new JSONObject();
 
 			bilingObj.put("PCD_CST_ID", cstId);
@@ -646,7 +625,6 @@ public class TestController {
 
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.write(bilingObj.toString().getBytes());
-			// wr.writeBytes(bilingObj.toString());
 			wr.flush();
 			wr.close();
 
@@ -668,5 +646,5 @@ public class TestController {
 		}
 		return jsonObject;
 	}
-
+	
 }
