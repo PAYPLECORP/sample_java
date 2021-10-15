@@ -114,9 +114,12 @@ public class PaypleController {
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
 			/*
-			 * ※ Referer 설정 방법 TEST : referer에는 테스트 결제창을 띄우는 도메인을 넣어주셔야합니다. 결제창을 띄울 도메인과
-			 * referer값이 다르면 무한로딩이 발생합니다. REAL : referer에는 가맹점 도메인으로 등록된 도메인을 넣어주셔야합니다. 다른
-			 * 도메인을 넣으시면 [AUTH0004] 에러가 발생합니다. 또한, TEST에서와 마찬가지로 결제창을 띄우는 도메인과 같아야 합니다.
+			 * ※ Referer 설정 방법 
+			 * TEST : referer에는 테스트 결제창을 띄우는 도메인을 넣어주셔야합니다. 
+			 * 		  결제창을 띄울 도메인과 referer값이 다르면 무한로딩이 발생합니다. 
+			 * REAL : referer에는 가맹점 도메인으로 등록된 도메인을 넣어주셔야합니다.
+			 * 		  다른 도메인을 넣으시면 [AUTH0004] 에러가 발생합니다. 
+			 * 		  또한, TEST에서와 마찬가지로 결제창을 띄우는 도메인과 같아야 합니다.
 			 */
 			con.setRequestMethod("POST");
 			con.setRequestProperty("content-type", "application/json");
@@ -187,8 +190,7 @@ public class PaypleController {
 		model.addAttribute("pay_total", request.getParameter("PCD_PAY_TOTAL")); // 결제요청금액
 		model.addAttribute("pay_taxtotal", request.getParameter("PCD_PAY_TAXTOTAL")); // 부가세(복합과세 적용 시)
 		model.addAttribute("pay_istax", request.getParameter("PCD_PAY_ISTAX")); // 과세 여부 (과세:Y 비과세:N)
-		model.addAttribute("pay_date", request.getParameter("PCD_PAY_TIME") == null ? ""
-				: request.getParameter("PCD_PAY_TIME").substring(0, 8)); // 결제완료 일자
+		model.addAttribute("pay_date", request.getParameter("PCD_PAY_TIME") == null ? "": request.getParameter("PCD_PAY_TIME").substring(0, 8)); // 결제완료 일자
 		model.addAttribute("pay_bankacctype", request.getParameter("PCD_PAY_BANKACCTYPE")); // 고객 구분 (법인 | 개인 or 개인사업자)
 
 		model.addAttribute("pay_bank", request.getParameter("PCD_PAY_BANK")); // 은행코드
@@ -293,9 +295,56 @@ public class PaypleController {
 	public JSONObject payCertSend(HttpServletRequest request) {
 
 		JSONObject jsonObject = new JSONObject();
+		JSONParser jsonParser = new JSONParser();
+		
+		// 결제요청 재컨펌(CERT) 데이터 - 필수
+		String auth_key = request.getParameter("PCD_AUTH_KEY"); // 파트너 인증 토큰 값
+		String payer_id = request.getParameter("PCD_PAYER_ID"); // 결제자 고유 ID (빌링키)
+		String pay_reqkey = request.getParameter("PCD_PAY_REQKEY"); // 최종 결제요청 승인키
+		String pay_cofurl = request.getParameter("PCD_PAY_COFURL"); // 최종 결제요청 URL
+		
+		try {
+
+			// 결제요청 재컨펌(CERT) 요청 전송
+			JSONObject refundObj = new JSONObject();
+
+			refundObj.put("PCD_CST_ID", "test"); //cst_id
+			refundObj.put("PCD_CUST_KEY", "abcd1234567890");
+			refundObj.put("PCD_AUTH_KEY", auth_key);
+			refundObj.put("PCD_PAYER_ID", payer_id);
+			refundObj.put("PCD_PAY_REQKEY", pay_reqkey);
+
+			URL url = new URL(pay_cofurl);
+			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+			con.setRequestMethod("POST");
+			con.setRequestProperty("content-type", "application/json");
+			con.setRequestProperty("referer", "http://localhost:8080");
+			con.setDoOutput(true);
+
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(refundObj.toString());
+			wr.flush();
+			wr.close();
+
+			int responseCode = con.getResponseCode();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+
+			in.close();
+
+			jsonObject = (JSONObject) jsonParser.parse(response.toString());
+
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		return jsonObject;
-
 	}
 	
 
