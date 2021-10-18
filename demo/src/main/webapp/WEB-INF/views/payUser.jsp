@@ -21,7 +21,7 @@
 					processData: false,
 					contentType: false,
 					//async : false,
-					url: "/cPayPayple/payUserInfo.php",
+					url: "/payUserInfo",
 					dataType: "json",
 					data: formData,
 					success: function(data) {
@@ -61,7 +61,7 @@
 					processData: false,
 					contentType: false,
 					//async : false,
-					url: "/cPayPayple/payUserDel.php",
+					url: "/payUserDel",
 					dataType: "json",
 					data: formData,
 					success: function(data) {
