@@ -50,7 +50,7 @@
 
                         $_table.appendTo('#payConfirmResult');
 
-                        $('#payConfirmResult').css('display', '');
+                        $('#payConfirmAct').css('display', 'none');
 
                     },
                     error: function(jqxhr, status, error) {
@@ -192,8 +192,7 @@ ${result}
 <form id="payConfirmForm">
     <input type="hidden" name="PCD_PAY_TYPE" id="PCD_PAY_TYPE" value="${pay_type}"> <!-- (필수) 결제수단 (transfer|card) -->
     <input type="hidden" name="PCD_AUTH_KEY" id="PCD_AUTH_KEY" value="${auth_key}"> <!-- (필수) 파트너 인증 토큰 값 -->
-    <input type="hidden" name="PCD_PAYER_ID" id="PCD_PAYER_ID" value="${payer_id}">
-    <!-- (필수) 결제자 고유 ID (빌링키) (결제완료시 RETURN) -->
+    <input type="hidden" name="PCD_PAYER_ID" id="PCD_PAYER_ID" value="${payer_id}"> <!-- (필수) 결제자 고유 ID (빌링키) (결제완료시 RETURN) -->
     <input type="hidden" name="PCD_PAY_REQKEY" id="PCD_PAY_REQKEY" value="${pay_reqkey}"> <!-- (필수) 최종 결제요청 승인키 -->
     <input type="hidden" name="PCD_PAY_COFURL" id="PCD_PAY_COFURL" value="${pay_cofurl}"> <!-- (필수) 최종 결제요청 URL -->
 </form>

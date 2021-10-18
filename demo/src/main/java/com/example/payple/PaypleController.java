@@ -308,10 +308,10 @@ public class PaypleController {
 			// 결제요청 재컨펌(CERT) 요청 전송
 			JSONObject refundObj = new JSONObject();
 
-			refundObj.put("PCD_CST_ID", "test"); //cst_id
-			refundObj.put("PCD_CUST_KEY", "abcd1234567890");
-			refundObj.put("PCD_AUTH_KEY", auth_key);
-			refundObj.put("PCD_PAYER_ID", payer_id);
+			refundObj.put("PCD_CST_ID", "test"); // 파트너사 cst_id
+			refundObj.put("PCD_CUST_KEY", "abcd1234567890"); // 파트너사 custKey
+			refundObj.put("PCD_AUTH_KEY", auth_key); 
+			refundObj.put("PCD_PAYER_ID", payer_id); 
 			refundObj.put("PCD_PAY_REQKEY", pay_reqkey);
 
 			URL url = new URL(pay_cofurl);
