@@ -20,7 +20,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class taxSaveController extends PaypleController {
-	// 현금영수증 발행 (taxSaveReq.jsp)
+	
+	/*
+	 *  taxSaveReq.jsp : 현금영수증 발행
+	 */
 	@RequestMapping(value = "/taxSaveReq")
 	public String taxSaveReqRoute(Model model) {
 		return "taxSaveReq";

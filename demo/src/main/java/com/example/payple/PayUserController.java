@@ -25,7 +25,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class PayUserController extends PaypleController {
-	// 등록 조회 및 해지(카드/계좌) (payUser.jsp)
+	
+	/*
+	 * payUser.jsp : 등록 조회 및 해지(카드/계좌) 
+	 */
 	@RequestMapping(value = "/payUser")
 	public String payUserRoute(Model model) {
 		return "payUser";

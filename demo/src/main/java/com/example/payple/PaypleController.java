@@ -24,7 +24,8 @@ public class PaypleController {
 		try {
 
 			// 파트너 인증 Request URL
-			String pURL = "https://democpay.payple.kr/php/auth.php"; // TEST
+			String pURL = "https://democpay.payple.kr/php/auth.php"; // TEST (테스트)
+			// String pURL = "https://cpay.payple.kr/php/auth.php"; // REAL (운영)
 
 			// 계정정보
 			String cst_id = "test";
@@ -63,7 +64,6 @@ public class PaypleController {
 			con.setDoOutput(true);
 
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			//wr.writeBytes(obj.toString());
 			wr.write(obj.toString().getBytes());
 			wr.flush();
 			wr.close();
