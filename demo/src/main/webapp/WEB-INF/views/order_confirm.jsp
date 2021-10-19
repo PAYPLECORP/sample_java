@@ -18,7 +18,26 @@
 <script>
 	$(document).ready(
 			function() {
+				
+				// callBack 함수 사용
+				var getResult = function(res) {
 
+					var url = "/order_result.php";
+
+					var $form = $('<form></form>');
+					$form.attr('action', url);
+					$form.attr('method', 'post');
+
+					$.each(res, function(key, val) {
+						var input = $('<input type="hidden" name="' + key + '" value="' + val + '">');
+						$form.append(input);
+					});
+
+					$form.appendTo('body');
+					$form.submit();
+				};
+
+				// 결제 요청
 				$("#payAction").on(
 						"click",
 						function(event) {
@@ -131,6 +150,7 @@
 							event.preventDefault();
 						});
 			});
+
 </script>
 <style>
 table {
