@@ -55,6 +55,7 @@ public class linkController extends PaypleController {
 		String pay_type = request.getParameter("PCD_PAY_TYPE"); // (필수) 결제수단 (transfer|card)
 		String pay_goods = request.getParameter("PCD_PAY_GOODS"); // (필수) 상품명
 		String pay_total = request.getParameter("PCD_PAY_TOTAL"); // (필수) 결제요청금액
+		String card_ver = request.getParameter("PCD_CARD_VER"); // 카드 세부 결제방식 (Default: 01+02)
 		String pay_istax = request.getParameter("PCD_PAY_ISTAX"); // 과세여부
 		String pay_taxtotal = request.getParameter("PCD_PAY_TAXTOTAL"); // 부가세(복합과세 적용 시)
 		String taxsave_flag = request.getParameter("PCD_TAXSAVE_FLAG"); // 현금영수증 발행요청 (Y|N)
@@ -70,6 +71,7 @@ public class linkController extends PaypleController {
 			linkRegObj.put("PCD_PAY_WORK", pay_work);
 			linkRegObj.put("PCD_PAY_TYPE", pay_type);
 			linkRegObj.put("PCD_PAY_GOODS", pay_goods);
+			linkRegObj.put("PCD_CARD_VER", card_ver);
 			linkRegObj.put("PCD_PAY_TOTAL", pay_total);
 			linkRegObj.put("PCD_PAY_ISTAX", pay_istax);
 			linkRegObj.put("PCD_PAY_TAXTOTAL", pay_taxtotal);
