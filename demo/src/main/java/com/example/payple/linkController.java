@@ -10,6 +10,13 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Controller;
@@ -79,30 +86,23 @@ public class linkController extends PaypleController {
 			linkRegObj.put("PCD_LINK_EXPIREDATE", link_expiredate);
 
 			URL url = new URL(linkRegURL);
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
-			con.setRequestMethod("POST");
-			con.setRequestProperty("content-type", "application/json");
-			con.setRequestProperty("referer", "http://localhost:8080");
-			con.setDoOutput(true);
+			HttpClient httpClient = HttpClientBuilder.create().build();
+			HttpPost httpPost = new HttpPost(linkRegURL);
+			httpPost.setHeader("Content-Type", "application/json");
+			httpPost.setHeader("Referer", "http://localhost:8080");
+			httpPost.setEntity(new StringEntity(linkRegObj.toString(), "UTF-8"));
 
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(linkRegObj.toString());
-			wr.flush();
-			wr.close();
+			HttpResponse response = httpClient.execute(httpPost);
 
-			int responseCode = con.getResponseCode();
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
+			if (response.getStatusLine().getStatusCode() == 200) {
+				ResponseHandler<String> handler = new BasicResponseHandler();
+				String strResponse = handler.handleResponse(response);
 
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
+				jsonObject = (JSONObject) jsonParser.parse(strResponse);
+			} else {
+				System.out.println("Http Response Error : [" + response.getStatusLine().getStatusCode() + "] " + response);
 			}
-
-			in.close();
-
-			jsonObject = (JSONObject) jsonParser.parse(response.toString());
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -42,9 +42,6 @@ public class PaypleController {
 					 obj.put(elem.getKey(), elem.getValue()); 
 				 } 
 			}
-			 
-
-			System.out.println("파트너 인증 Request: " + obj.toString());
 
 			URL url = new URL(pURL);
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
