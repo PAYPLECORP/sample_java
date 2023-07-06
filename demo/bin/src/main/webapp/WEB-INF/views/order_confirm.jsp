@@ -120,11 +120,8 @@
 							obj.PCD_RST_URL = pcd_rst_url; // (필수) 결제(요청)결과 RETURN URL
 							//obj.callbackFunction = getResult; // (선택) 결과를 받고자 하는 callback 함수명 (callback함수를 설정할 경우 PCD_RST_URL 이 작동하지 않음)
 
-							// 파트너 인증시 받은 AuthKey 값 입력
-							obj.PCD_AUTH_KEY = "${authKey}";
-
-							// 파트너 인증시 받은 return_url 값 입력
-							obj.PCD_PAY_URL = "${payReqURL}";
+							// 파트너 인증 - 클라이언트 키(clientKey)
+							obj.clientKey = "${clientKey}";
 
 							PaypleCpayAuthCheck(obj);
 

@@ -42,6 +42,7 @@ public class orderController extends PaypleController{
 	 */
 	@RequestMapping(value = "/order_confirm")
 	public String order_confirm(HttpServletRequest request, Model model) {
+		String clientKey = "test_DF55F29DA654A8CBC0F0A9DD4B556486";
 
 		model.addAttribute("pay_type", request.getParameter("pay_type")); 				// 결제수단 (transfer|card)
 		model.addAttribute("pay_work", request.getParameter("pay_work")); 				// 결제요청 방식 (AUTH | PAY | CERT)
@@ -61,15 +62,8 @@ public class orderController extends PaypleController{
 		model.addAttribute("payer_authtype", request.getParameter("payer_authtype")); 	// 비밀번호 결제 인증방식 (pwd : 패스워드 인증)
 		model.addAttribute("is_direct", request.getParameter("is_direct")); 			// 결제창 호출 방식 (DIRECT: Y | POPUP: N)
 		model.addAttribute("hostname", System.getenv("HOSTNAME"));
-
-		// 파트너 인증
-		JSONObject obj = new JSONObject();
-		obj = payAuth(null);
-
-		// 파트너 인증 후 결제요청 시 필요한 필수 파라미터
-		model.addAttribute("authKey", obj.get("AuthKey")); 		// 인증 키
-		model.addAttribute("payReqURL", obj.get("return_url")); // 결제요청 URL
-
+		model.addAttribute("clientKey", clientKey); 									// 클라이언트 키(clientKey): 결제창 파트너 인증 키 값
+		
 		return "order_confirm";
 	}
 
