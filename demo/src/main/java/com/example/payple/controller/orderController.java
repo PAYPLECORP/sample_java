@@ -1,16 +1,15 @@
-package com.example.payple;
+package com.example.payple.controller;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.example.payple.common.AuthResponse;
+import com.example.payple.common.HttpUtil;
+import com.example.payple.common.PaypleAuthenticator;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Controller;
@@ -20,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class orderController extends PaypleController{
+public class orderController  {
 	
 	/*
 	 * order.jsp : 주문 페이지  
@@ -79,7 +78,7 @@ public class orderController extends PaypleController{
 		String result = "";
 
 		while (params.hasMoreElements()) {
-			String name = (String) params.nextElement();
+			String name = params.nextElement();
 			result += name + " => " + request.getParameter(name) + "<br>";
 		}
 		model.addAttribute("result", result);
@@ -137,14 +136,8 @@ public class orderController extends PaypleController{
 		Map<String, String> refundParams = new HashMap<>();
 		refundParams.put("PCD_PAYCANCEL_FLAG", "Y");
 
-		JSONObject authObj = new JSONObject();
-		authObj = payAuth(refundParams);
-
-		// 파트너 인증 응답값
-		String cstId = (String) authObj.get("cst_id"); 			// 파트너사 ID
-		String custKey = (String) authObj.get("custKey"); 		// 파트너사 키
-		String authKey = (String) authObj.get("AuthKey"); 		// 인증 키
-		String payRefURL = (String) authObj.get("return_url"); 	// 결제취소요청 URL
+		JSONObject authObj = PaypleAuthenticator.payAuth(refundParams);
+		AuthResponse auth = AuthResponse.from(authObj);
 
 		// 결제취소 요청 파라미터
 		String refund_key = "a41ce010ede9fcbfb3be86b24858806596a9db68b79d138b147c3e563e1829a0"; // (필수) 환불키
@@ -154,13 +147,9 @@ public class orderController extends PaypleController{
 		String refund_taxtotal = request.getParameter("PCD_REFUND_TAXTOTAL"); 					// 결제취소 부가세
 
 		try {
-
 			// 결제취소 요청 전송
-			JSONObject refundObj = new JSONObject();
-
-			refundObj.put("PCD_CST_ID", cstId);
-			refundObj.put("PCD_CUST_KEY", custKey);
-			refundObj.put("PCD_AUTH_KEY", authKey);
+			JSONObject refundObj = HttpUtil.createBasePaypleRequest(
+				auth.getCstId(), auth.getCustKey(), auth.getAuthKey());
 			refundObj.put("PCD_REFUND_KEY", refund_key);
 			refundObj.put("PCD_PAYCANCEL_FLAG", "Y");
 			refundObj.put("PCD_PAY_OID", pay_oid);
@@ -168,31 +157,11 @@ public class orderController extends PaypleController{
 			refundObj.put("PCD_REFUND_TOTAL", refund_total);
 			refundObj.put("PCD_REFUND_TAXTOTAL", refund_taxtotal);
 
-			URL url = new URL(payRefURL);
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			HttpURLConnection con = HttpUtil.createPaypleConnection(auth.getReturnUrl());
+			HttpUtil.sendJsonRequest(con, refundObj);
 
-			con.setRequestMethod("POST");
-			con.setRequestProperty("content-type", "application/json");
-			con.setRequestProperty("referer", "http://localhost:8080");
-			con.setDoOutput(true);
-
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(refundObj.toString());
-			wr.flush();
-			wr.close();
-
-			int responseCode = con.getResponseCode();
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-
-			in.close();
-
-			jsonObject = (JSONObject) jsonParser.parse(response.toString());
+			String responseBody = HttpUtil.readResponse(con);
+			jsonObject = (JSONObject) jsonParser.parse(responseBody);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -201,8 +170,8 @@ public class orderController extends PaypleController{
 		return jsonObject;
 
 	}
-	
-	
+
+
 	/*
 	 * payCertSend : 결제요청 재컨펌 (CERT)
 	 */
@@ -218,43 +187,18 @@ public class orderController extends PaypleController{
 		String payer_id = request.getParameter("PCD_PAYER_ID"); 	// 결제자 고유 ID (빌링키)
 		String pay_reqkey = request.getParameter("PCD_PAY_REQKEY"); // 최종 결제요청 승인키
 		String pay_cofurl = request.getParameter("PCD_PAY_COFURL"); // 최종 결제요청 URL
-		
+
 		try {
-
 			// 결제요청 재컨펌(CERT) 요청 전송
-			JSONObject refundObj = new JSONObject();
+			JSONObject certObj = HttpUtil.createBasePaypleRequest("test", "abcd1234567890", auth_key);
+			certObj.put("PCD_PAYER_ID", payer_id);
+			certObj.put("PCD_PAY_REQKEY", pay_reqkey);
 
-			refundObj.put("PCD_CST_ID", "test"); 				// 파트너사 cst_id
-			refundObj.put("PCD_CUST_KEY", "abcd1234567890"); 	// 파트너사 custKey
-			refundObj.put("PCD_AUTH_KEY", auth_key); 
-			refundObj.put("PCD_PAYER_ID", payer_id); 
-			refundObj.put("PCD_PAY_REQKEY", pay_reqkey);
+			HttpURLConnection con = HttpUtil.createPaypleConnection(pay_cofurl);
+			HttpUtil.sendJsonRequest(con, certObj);
 
-			URL url = new URL(pay_cofurl);
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-
-			con.setRequestMethod("POST");
-			con.setRequestProperty("content-type", "application/json");
-			con.setRequestProperty("referer", "http://localhost:8080");
-			con.setDoOutput(true);
-
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(refundObj.toString());
-			wr.flush();
-			wr.close();
-
-			int responseCode = con.getResponseCode();
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-
-			in.close();
-
-			jsonObject = (JSONObject) jsonParser.parse(response.toString());
+			String responseBody = HttpUtil.readResponse(con);
+			jsonObject = (JSONObject) jsonParser.parse(responseBody);
 
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -293,16 +237,9 @@ public class orderController extends PaypleController{
 		bilingParams.put("PCD_PAY_TYPE", request.getParameter("PCD_PAY_TYPE"));
 		bilingParams.put("PCD_SIMPLE_FLAG", "Y");
 
-		JSONObject authObj = new JSONObject();
-		authObj = payAuth(bilingParams);
-
+		JSONObject authObj = PaypleAuthenticator.payAuth(bilingParams);
+		AuthResponse auth = AuthResponse.from(authObj);
 		System.out.println(authObj.toString());
-
-		// 파트너 인증 응답값
-		String cstId = (String) authObj.get("cst_id"); 			// 파트너사 ID
-		String custKey = (String) authObj.get("custKey"); 		// 파트너사 키
-		String authKey = (String) authObj.get("AuthKey"); 		// 인증 키
-		String bilingURL = (String) authObj.get("return_url"); 	// 카드 정기결제 재결제 요청 URL
 
 		// 정기결제 재결제 요청 파라미터
 		String pay_type = request.getParameter("PCD_PAY_TYPE"); 			// (필수) 결제수단 (card | transfer)
@@ -319,11 +256,8 @@ public class orderController extends PaypleController{
 
 		try {
 			// 정기결제 재결제 요청 전송
-			JSONObject bilingObj = new JSONObject();
-
-			bilingObj.put("PCD_CST_ID", cstId);
-			bilingObj.put("PCD_CUST_KEY", custKey);
-			bilingObj.put("PCD_AUTH_KEY", authKey);
+			JSONObject bilingObj = HttpUtil.createBasePaypleRequest(
+				auth.getCstId(), auth.getCustKey(), auth.getAuthKey());
 			bilingObj.put("PCD_PAY_TYPE", pay_type);
 			bilingObj.put("PCD_PAYER_ID", payer_id);
 			bilingObj.put("PCD_PAY_GOODS", pay_goods);
@@ -339,32 +273,11 @@ public class orderController extends PaypleController{
 
 			System.out.println(bilingObj.toString());
 
-			URL url = new URL(bilingURL);
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			HttpURLConnection con = HttpUtil.createPaypleConnection(auth.getReturnUrl());
+			HttpUtil.sendJsonRequest(con, bilingObj);
 
-			con.setRequestMethod("POST");
-			con.setRequestProperty("content-type", "application/json");
-			con.setRequestProperty("charset", "UTF-8");
-			con.setRequestProperty("referer", "http://localhost:8080");
-			con.setDoOutput(true);
-
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.write(bilingObj.toString().getBytes());
-			wr.flush();
-			wr.close();
-
-			int responseCode = con.getResponseCode();
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-
-			in.close();
-
-			jsonObject = (JSONObject) jsonParser.parse(response.toString());
+			String responseBody = HttpUtil.readResponse(con);
+			jsonObject = (JSONObject) jsonParser.parse(responseBody);
 
 		} catch (Exception e) {
 			e.printStackTrace();

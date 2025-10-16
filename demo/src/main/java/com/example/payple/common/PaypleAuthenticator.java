@@ -1,4 +1,4 @@
-package com.example.payple;
+package com.example.payple.common;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -9,16 +9,18 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-public class PaypleController {
+public class PaypleAuthenticator {
 
+	private PaypleAuthenticator() {
+	}
 
 	/**
 	 * 파트너 인증 메소드
-	 * 
+	 *
 	 * @param params // 상황별 파트너 인증 요청 파라미터(계정정보 제외)
 	 * @return JSONObject // 파트너 인증 응답값
 	 */
-	public JSONObject payAuth(Map<String, String> params) {
+	public static JSONObject payAuth(Map<String, String> params) {
 		JSONObject jsonObject = new JSONObject();
 		JSONParser jsonParser = new JSONParser();
 		try {
@@ -65,10 +67,9 @@ public class PaypleController {
 			wr.flush();
 			wr.close();
 
-			int responseCode = con.getResponseCode();
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
-			StringBuffer response = new StringBuffer();
+			StringBuilder response = new StringBuilder();
 
 			while ((inputLine = in.readLine()) != null) {
 				response.append(inputLine);

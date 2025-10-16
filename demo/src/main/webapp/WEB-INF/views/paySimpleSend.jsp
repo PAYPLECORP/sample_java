@@ -1,12 +1,12 @@
-<%@ page language="java" contentType="text/html; charset=EUC-KR"
-    pageEncoding="EUC-KR"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-    <title>°èÁÂ Á¤±â°áÁ¦ Àç°áÁ¦</title>
+    <title>ê³„ì¢Œ ì •ê¸°ê²°ì œ ìž¬ê²°ì œ</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     <script type="text/javascript">
@@ -15,7 +15,7 @@
             $("#PaySimpleAction").on("click", function(e) {
                 e.preventDefault();
 
-                var con = "Á¤±â°áÁ¦ Àç°áÁ¦¸¦ ¿äÃ»ÇÕ´Ï´Ù. \n ÁøÇàÇÏ½Ã°Ú½À´Ï±î? ";
+                var con = "ì •ê¸°ê²°ì œ ìž¬ê²°ì œë¥¼ ìš”ì²­í•©ë‹ˆë‹¤. \n ì§„í–‰í•˜ì‹œê² ìŠµë‹ˆê¹Œ? ";
 
                 if (confirm(con) == true) {
                     var formData = new FormData($("#paySimpleForm")[0]);
@@ -96,66 +96,66 @@
 </head>
 
 <body>
-    <h3>Á¤±â°áÁ¦ Àç°áÁ¦(ºô¸µÅ°)</h3>
+    <h3>ì •ê¸°ê²°ì œ ìž¬ê²°ì œ(ë¹Œë§í‚¤)</h3>
     <div id="form_area">
         <form id="paySimpleForm">
             <table>
              	<tr>
-                    <td>*°áÁ¦¼ö´Ü</td>
+                    <td>*ê²°ì œìˆ˜ë‹¨</td>
                     <td> :
                         <select id="PCD_PAY_TYPE" name="PCD_PAY_TYPE">
-                            <option value="card" selected>Ä«µå</option>
-                            <option value="transfer">°èÁÂÀÌÃ¼</option>
+                            <option value="card" selected>ì¹´ë“œ</option>
+                            <option value="transfer">ê³„ì¢Œì´ì²´</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
-                    <td>*ÆäÀÌÇÃ °íÀ¯ ID(ºô¸µÅ°)</td>
+                    <td>*íŽ˜ì´í”Œ ê³ ìœ  ID(ë¹Œë§í‚¤)</td>
                     <td> :
                         <input type="text" name="PCD_PAYER_ID" id="PCD_PAYER_ID" value="${payer_id}" required />
                     </td>
                 </tr>
                 <tr>
-                    <td>*»óÇ°¸í</td>
+                    <td>*ìƒí’ˆëª…</td>
                     <td> :
                         <input type="text" name="PCD_PAY_GOODS" id="PCD_PAY_GOODS" value="${pay_goods}" required />
                     </td>
                 </tr>
                 <tr>
-                    <td>*°áÁ¦±Ý¾×</td>
+                    <td>*ê²°ì œê¸ˆì•¡</td>
                     <td> :
                         <input type="text" name="PCD_PAY_TOTAL" id="PCD_PAY_TOTAL" value="${pay_total}" required />
                     </td>
                 </tr>
                 <tr>
-                    <td>°áÁ¦ÀÚ °íÀ¯¹øÈ£</td>
+                    <td>ê²°ì œìž ê³ ìœ ë²ˆí˜¸</td>
                     <td> :
                         <input type="text" name="PCD_PAYER_NO" id="PCD_PAYER_NO" value="${payer_no}" />
                     </td>
                 </tr>
                 <tr>
-                    <td>°áÁ¦ÀÚ ÀÌ¸ÞÀÏ</td>
+                    <td>ê²°ì œìž ì´ë©”ì¼</td>
                     <td> :
                         <input type="text" name="PCD_PAYER_EMAIL" id="PCD_PAYER_EMAIL" value="${payer_email}" />
                     </td>
                 </tr>
                 <tr>
-                    <td>°ú¼¼¿©ºÎ</td>
+                    <td>ê³¼ì„¸ì—¬ë¶€</td>
                     <td> :
                         <select id="PCD_PAY_ISTAX" name="PCD_PAY_ISTAX">
-                            <option value="Y" selected>°ú¼¼</option>
-                            <option value="N">ºñ°ú¼¼</option>
+                            <option value="Y" selected>ê³¼ì„¸</option>
+                            <option value="N">ë¹„ê³¼ì„¸</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
-                    <td>ºÎ°¡¼¼</td>
+                    <td>ë¶€ê°€ì„¸</td>
                     <td> :
                         <input type="text" name="PCD_PAY_TAXTOTAL" id="PCD_PAY_TAXTOTAL" value="" />
                     </td>
                 </tr>
 	                <tr id="taxsave_flag_view" style="display:none;">
-	                    <td>Çö±Ý¿µ¼öÁõ ¹ßÇà¿©ºÎ</td>
+	                    <td>í˜„ê¸ˆì˜ìˆ˜ì¦ ë°œí–‰ì—¬ë¶€</td>
 	                    <td> :
 	                        <select id="PCD_TAXSAVE_FLAG" name="PCD_TAXSAVE_FLAG">
 	                            <option value="N">N</option>
@@ -164,16 +164,16 @@
 	                    </td>
 	                </tr>
 	                <tr id="taxsave_trade_view" style="display:none;">
-	                    <td>Çö±Ý¿µ¼öÁõ ¹ßÇàÅ¸ÀÔ</td>
+	                    <td>í˜„ê¸ˆì˜ìˆ˜ì¦ ë°œí–‰íƒ€ìž…</td>
 	                    <td> :
 	                        <select id="PCD_TAXSAVE_TRADE" name="PCD_TAXSAVE_TRADE">
-	                            <option value="personal">¼Òµæ°øÁ¦</option>
-	                            <option value="company">ÁöÃâÁõºù</option>
+	                            <option value="personal">ì†Œë“ê³µì œ</option>
+	                            <option value="company">ì§€ì¶œì¦ë¹™</option>
 	                        </select>
 	                    </td>
 	                </tr>
 	                <tr id="taxsave_idnum_view" style="display:none;">
-	                    <td>Çö±Ý¿µ¼öÁõ ¹ßÇà´ë»ó ¹øÈ£</td>
+	                    <td>í˜„ê¸ˆì˜ìˆ˜ì¦ ë°œí–‰ëŒ€ìƒ ë²ˆí˜¸</td>
 	                    <td> :
 	                        <input type="text" id="PCD_TAXSAVE_IDNUM" name="PCD_TAXSAVE_IDNUM" value="" />
 	                    </td>
@@ -181,7 +181,7 @@
                 </div>
             </table>
         </form>
-        <button id="PaySimpleAction">Àç°áÁ¦ ¿äÃ»</button>
+        <button id="PaySimpleAction">ìž¬ê²°ì œ ìš”ì²­</button>
     </div>
     <br />
     <hr />

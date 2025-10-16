@@ -1,11 +1,11 @@
-<%@ page language="java" contentType="text/html; charset=EUC-KR"
-    pageEncoding="EUC-KR"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 
 <head>
-	<meta charset="EUC-KR" />
-	<title>搬力搬苞 炼雀</title>
+	<meta charset="UTF-8" />
+	<title>瓴办牅瓴瓣臣 臁绊殞</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 	<script type="text/javascript">
@@ -70,34 +70,34 @@
 </head>
 
 <body>
-	<h3>搬力搬苞 炼雀</h3>
+	<h3>瓴办牅瓴瓣臣 臁绊殞</h3>
 	<div id="form_area">
 		<form id="PayCheckForm">
 			<table>
 				<tr>
-					<td>*搬力荐窜</td>
+					<td>*瓴办牅靾橂嫧</td>
 					<td> :
 						<select id="PCD_PAY_TYPE" name="PCD_PAY_TYPE">
-							<option value="card">墨靛</option>
-							<option value="transfer">拌谅捞眉</option>
+							<option value="card">旃措摐</option>
+							<option value="transfer">瓿勳鞚挫泊</option>
 						</select>
 					</td>
 				</tr>
 				<tr>
-					<td>*林巩锅龋</td>
+					<td>*欤茧氩堩樃</td>
 					<td> :
 						<input type="text" id="PCD_PAY_OID" name="PCD_PAY_OID" />
 					</td>
 				</tr>
 				<tr>
-					<td>*搬力老磊 (YYYYMMDD)</td>
+					<td>*瓴办牅鞚检瀽 (YYYYMMDD)</td>
 					<td> :
 						<input type="number" id="PCD_PAY_DATE" name="PCD_PAY_DATE" size="9" maxlength="8" />
 					</td>
 				</tr>
 			</table>
 		</form>
-		<button id="PayCheckAct">炼雀</button>
+		<button id="PayCheckAct">臁绊殞</button>
 	</div>
 	<br />
 	<hr />
