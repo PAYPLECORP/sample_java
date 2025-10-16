@@ -1,15 +1,14 @@
-package com.example.payple;
+package com.example.payple.controller;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.example.payple.common.AuthResponse;
+import com.example.payple.common.HttpUtil;
+import com.example.payple.common.PaypleAuthenticator;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Controller;
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class payInfoController extends PaypleController {
+public class payInfoController {
 
 	/*
 	 * payInfo.jsp : 결제결과 조회 페이지
@@ -41,14 +40,8 @@ public class payInfoController extends PaypleController {
 		Map<String, String> infoParams = new HashMap<>();
 		infoParams.put("PCD_PAYCHK_FLAG", "Y");
 
-		JSONObject authObj = new JSONObject();
-		authObj = payAuth(infoParams);
-
-		// 파트너 인증 응답값
-		String cstId = (String) authObj.get("cst_id"); // 파트너사 ID
-		String custKey = (String) authObj.get("custKey"); // 파트너사 키
-		String authKey = (String) authObj.get("AuthKey"); // 인증 키
-		String payInfoURL = (String) authObj.get("return_url"); // 결제결과 조회 URL
+		JSONObject authObj = PaypleAuthenticator.payAuth(infoParams);
+		AuthResponse auth = AuthResponse.from(authObj);
 
 		// 결제결과 조회 요청 파라미터
 		String pay_type = request.getParameter("PCD_PAY_TYPE"); // (필수) 결제수단 (transfer|card)
@@ -57,41 +50,18 @@ public class payInfoController extends PaypleController {
 
 		try {
 			// 결제결과 조회 요청 전송
-			JSONObject payInfoObj = new JSONObject();
-
-			payInfoObj.put("PCD_CST_ID", cstId);
-			payInfoObj.put("PCD_CUST_KEY", custKey);
-			payInfoObj.put("PCD_AUTH_KEY", authKey);
+			JSONObject payInfoObj = HttpUtil.createBasePaypleRequest(
+				auth.getCstId(), auth.getCustKey(), auth.getAuthKey());
 			payInfoObj.put("PCD_PAYCHK_FLAG", "Y");
 			payInfoObj.put("PCD_PAY_TYPE", pay_type);
 			payInfoObj.put("PCD_PAY_OID", pay_oid);
 			payInfoObj.put("PCD_PAY_DATE", pay_date);
 
-			URL url = new URL(payInfoURL);
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			HttpURLConnection con = HttpUtil.createPaypleConnection(auth.getReturnUrl());
+			HttpUtil.sendJsonRequest(con, payInfoObj);
 
-			con.setRequestMethod("POST");
-			con.setRequestProperty("content-type", "application/json");
-			con.setRequestProperty("referer", "http://localhost:8080");
-			con.setDoOutput(true);
-
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(payInfoObj.toString());
-			wr.flush();
-			wr.close();
-
-			int responseCode = con.getResponseCode();
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-
-			in.close();
-
-			jsonObject = (JSONObject) jsonParser.parse(response.toString());
+			String responseBody = HttpUtil.readResponse(con);
+			jsonObject = (JSONObject) jsonParser.parse(responseBody);
 
 		} catch (Exception e) {
 			e.printStackTrace();
