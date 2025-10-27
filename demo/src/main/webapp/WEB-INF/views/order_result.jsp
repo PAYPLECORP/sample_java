@@ -134,6 +134,10 @@ ${result}
     <br>
     PCD_PAY_TYPE = ${pay_type}
     <br>
+    PCD_PAY_METHOD = ${pay_method}
+    <br>
+    PCD_EASY_PAY_METHOD = ${easy_pay_method}
+    <br>
     PCD_PAY_WORK = ${pay_work}
     <br>
     PCD_PAYER_ID = ${payer_id}
@@ -173,6 +177,8 @@ ${result}
     PCD_PAY_TIME = ${pay_time}
     <br>
     PCD_TAXSAVE_RST = ${taxsave_rst}
+    <br>
+    PCD_TX_KEY = ${tx_key}
 </div>
 
 <div style="width:800px; height:20px">&nbsp;</div>

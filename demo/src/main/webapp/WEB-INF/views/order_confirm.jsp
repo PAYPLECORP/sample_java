@@ -12,8 +12,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 <!-- 서버별 페이플 국내결제 스크립트 추가 -->
-<script src="https://democpay.payple.kr/js/v1/payment.js"></script> <!-- 테스트(TEST) -->
-<!-- <script src="https://cpay.payple.kr/js/v1/payment.js"></script> --> <!-- 운영(REAL) -->
+<script src="https://democpay.payple.kr/js/v1/payment.js?v=20250613090000"></script> <!-- 테스트(TEST) -->
+<!-- <script src="https://cpay.payple.kr/js/v1/payment.js?v=20250613090000"></script> --> <!-- 운영(REAL) -->
 
 <script>
 	$(document).ready(
@@ -59,6 +59,7 @@
 							var card_ver = "${card_ver}";
 							var payer_authtype = "${payer_authtype}";
 							var is_direct = "${is_direct}";
+							var pay_method_flag = "${pay_method_flag}";
 							var pcd_rst_url = "";
 							var server_name = "${hostname}";
 
@@ -138,6 +139,11 @@
 							obj.PCD_PAYER_AUTHTYPE = payer_authtype; 	// (선택) 비밀번호 결제 인증방식 (pwd : 패스워드 인증)
 							obj.PCD_RST_URL = pcd_rst_url; 				// (필수) 결제(요청)결과 RETURN URL
 							//obj.callbackFunction = getResult; 		// (선택) 결과를 받고자 하는 callback 함수명 (callback함수를 설정할 경우 PCD_RST_URL 이 작동하지 않음)
+
+							// PCD_PAY_METHOD 추가 (선택안함이 아닐 경우에만)
+							if (pay_method_flag != '') {
+								obj.PCD_PAY_METHOD = pay_method_flag; 	// (선택) 결제 수단
+							}
 
 							// 파트너 인증 - 클라이언트 키(clientKey)
 							obj.clientKey = "${clientKey}";

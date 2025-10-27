@@ -1,12 +1,12 @@
-<%@ page language="java" contentType="text/html; charset=EUC-KR"
-    pageEncoding="EUC-KR"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-    <title>URL∏µ≈©∞·¡¶ ª˝º∫</title>
+    <title>URLÎßÅÌÅ¨Í≤∞Ï†ú ÏÉùÏÑ±</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     <script>
@@ -48,22 +48,22 @@
                     },
                 });
             });
-            
-            /* 
-	            #PCD_PAY_TYPE: ∞·¡¶ºˆ¥‹
-	            #card_ver_view: ƒ´µÂ ºº∫Œ ∞·¡¶πÊΩƒ view
+
+            /*
+	            #PCD_PAY_TYPE: Í≤∞Ï†úÏàòÎã®
+	            #card_ver_view: Ïπ¥Îìú ÏÑ∏Î∂Ä Í≤∞Ï†úÎ∞©Ïãù view
 	        */
-	        $("#PCD_PAY_TYPE").on("change", function(e) {
-	            e.preventDefault();
-	
-	            var this_val = $(this).val();
-	
-	            if (this_val == "card") {
-	                $("#card_ver_view").css("display", "");
-	            } else {
-	                $("#card_ver_view").css("display", "none");
-	            }
-	        });
+            $("#PCD_PAY_TYPE").on("change", function(e) {
+                e.preventDefault();
+
+                var this_val = $(this).val();
+
+                if (this_val == "card") {
+                    $("#card_ver_view").css("display", "");
+                } else {
+                    $("#card_ver_view").css("display", "none");
+                }
+            });
         });
     </script>
     <style>
@@ -88,64 +88,64 @@
 </head>
 
 <body>
-    <h3>URL∏µ≈©∞·¡¶ ª˝º∫</h3>
-    <div id="form_area">
-        <form id="LinkRegForm" name="LinkRegForm">
-            <table>
-                <tr>
-                    <td>*∞·¡¶ºˆ¥‹</td>
-                    <td>
-                        :
-                        <span>
+<h3>URLÎßÅÌÅ¨Í≤∞Ï†ú ÏÉùÏÑ±</h3>
+<div id="form_area">
+    <form id="LinkRegForm" name="LinkRegForm">
+        <table>
+            <tr>
+                <td>*Í≤∞Ï†úÏàòÎã®</td>
+                <td>
+                    :
+                    <span>
                             <select id="PCD_PAY_TYPE" name="PCD_PAY_TYPE">
-                                <option value="transfer|card">∞Ë¡¬+ƒ´µÂ</option>
-                                <option value="transfer">∞Ë¡¬¿Ã√º∞·¡¶</option>
-                                <option value="card">Ω≈øÎƒ´µÂ</option>
+                                <option value="transfer|card">Í≥ÑÏ¢å+Ïπ¥Îìú</option>
+                                <option value="transfer">Í≥ÑÏ¢åÏù¥Ï≤¥Í≤∞Ï†ú</option>
+                                <option value="card">Ïã†Ïö©Ïπ¥Îìú</option>
                             </select>
                         </span>
-                        <span id="card_ver_view" style="display: none">
+                    <span id="card_ver_view" style="display: none">
                             <select id="PCD_CARD_VER" name="PCD_CARD_VER">
-                                <option value="01+02">∞£∆Ì/¡§±‚+æ€ƒ´µÂ</option>
-                                <option value="01">∞£∆Ì/¡§±‚(∫Ù∏µ≈∞∞·¡¶)</option>
-                                <option value="02">æ€ƒ´µÂ</option>
+                                <option value="01+02">Í∞ÑÌé∏/Ï†ïÍ∏∞+Ïï±Ïπ¥Îìú</option>
+                                <option value="01">Í∞ÑÌé∏/Ï†ïÍ∏∞(ÎπåÎßÅÌÇ§Í≤∞Ï†ú)</option>
+                                <option value="02">Ïï±Ïπ¥Îìú</option>
                             </select>
                         </span>
-                     </td>
-                </tr>
-                <tr>
-                    <td>*ªÛ«∞∏Ì</td>
-                    <td> :
-                        <input type="text" name="PCD_PAY_GOODS" id="PCD_PAY_GOODS" value="" required="required" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>*∞·¡¶ø‰√ª±›æ◊</td>
-                    <td> :
-                        <input type="number" name="PCD_PAY_TOTAL" id="PCD_PAY_TOTAL" value="" required="required" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>«ˆ±›øµºˆ¡ı πﬂ«‡ø©∫Œ</td>
-                    <td> :
-                        <select id="PCD_TAXSAVE_FLAG" name="PCD_TAXSAVE_FLAG">
-                            <option value="N">N</option>
-                            <option value="Y">Y</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>URL ∞·¡¶ ∏∏∑·¿œ</td>
-                    <td> :
-                        <input type="number" name="PCD_LINK_EXPIREDATE" id="PCD_LINK_EXPIREDATE" value="" />
-                    </td>
-                </tr>
-            </table>
-        </form>
-        <button id="linkRegAct">∏µ≈©ª˝º∫ ø‰√ª</button>
-    </div>
-    <br />
-    <hr />
-    <div id="linkRegResult"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>*ÏÉÅÌíàÎ™Ö</td>
+                <td> :
+                    <input type="text" name="PCD_PAY_GOODS" id="PCD_PAY_GOODS" value="" required="required" />
+                </td>
+            </tr>
+            <tr>
+                <td>*Í≤∞Ï†úÏöîÏ≤≠Í∏àÏï°</td>
+                <td> :
+                    <input type="number" name="PCD_PAY_TOTAL" id="PCD_PAY_TOTAL" value="" required="required" />
+                </td>
+            </tr>
+            <tr>
+                <td>ÌòÑÍ∏àÏòÅÏàòÏ¶ù Î∞úÌñâÏó¨Î∂Ä</td>
+                <td> :
+                    <select id="PCD_TAXSAVE_FLAG" name="PCD_TAXSAVE_FLAG">
+                        <option value="N">N</option>
+                        <option value="Y">Y</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>URL Í≤∞Ï†ú ÎßåÎ£åÏùº</td>
+                <td> :
+                    <input type="number" name="PCD_LINK_EXPIREDATE" id="PCD_LINK_EXPIREDATE" value="" placeholder="YYYY-MM-DD" />
+                </td>
+            </tr>
+        </table>
+    </form>
+    <button id="linkRegAct">ÎßÅÌÅ¨ÏÉùÏÑ± ÏöîÏ≤≠</button>
+</div>
+<br />
+<hr />
+<div id="linkRegResult"></div>
 </body>
 
 </html>
